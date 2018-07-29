@@ -1,5 +1,8 @@
 'use strict';
 
+let counter, breakCounter;
+
+
 class Clock extends React.Component {
   constructor(props) {
     super(props);
@@ -17,6 +20,10 @@ class Clock extends React.Component {
     this.startPlay = this.startPlay.bind(this);
     this.stopPlay = this.stopPlay.bind(this);
     this.togglePlay = this.togglePlay.bind(this);
+    this.sessionDecrement = this.sessionDecrement.bind(this);
+    this.sessionIncrement = this.sessionIncrement.bind(this);
+    this.breakDecrement = this.breakDecrement.bind(this);
+    this.breakIncrement = this.breakIncrement.bind(this);
   }
 
   timeFormat(num){
@@ -28,28 +35,83 @@ class Clock extends React.Component {
             num % 60 >= 10 ? leading = '0' : (leading = '0', middle = ':0' );
     return `${leading}${Math.floor(num/60)}${middle}${num % 60}`
   }
-//COUNTER BREAKCOUNTER AREN'T GLOBAL POSSIBLE PROBLEM
-  startPlay(){
-    let newState = {...this.state},
-        counter,
-        breakCounter;
-    newState.playing = true;
-    newState.icon = 'NEWICONGOESHERE';
-    thi.setState(newState);
-    this.state.session === 'session' ?  counter = setInterval(timer, 1000) :  breakCounter = setInterval(timerBreak, 1000);
-  }
-
-  stopPlay(){
-    let newState = {...this.state};
-    newState.playing = false;
-    newState.icon = 'NEWICONGOESHERE';
-    thi.setState(newState);
-    this.state.session === 'session' ?  clearInterval(counter) : clearInterval(breakCounter);
-  }
 
   togglePlay(){
-    this.state.playing === false ? this.startPlay() : this.stopPlay();
+    if(this.state.playing === false){
+      let newState = {...this.state,
+        playing: true,
+        icon: 'NEWICONGOESHERE'
+        };
+        this.setState(newState);
+        this.state.session === 'session' ?  counter = setInterval(timer, 1000) :  breakCounter = setInterval(timerBreak, 1000);
+    }
+    else{
+      let newState = {...this.state,
+        playing: false,
+        icon: 'NEWICONGOESHERE'
+      };
+  
+      thi.setState(newState);
+      this.state.session === 'session' ?  clearInterval(counter) : clearInterval(breakCounter);
+    }
   }
+//MINUTESSECONDS REFER TO NEWSTATE INSIDE NEW STATE. COULD CAUSE PROBLEMS
+  sessionIncrement(){
+    if(this.state.minutes < 60){
+      let newState = {...this.state,
+        minutes: this.state.minutes += 1,
+        minutesSeconds = newState.minutes*60
+      };
+      this.setState(newState);
+    }
+  }
+
+  sessionDecrement(){
+    if(this.state.minutes > 1){
+      let newState = {...this.state,
+        minutes: this.state.minutes -= 1,
+        minutesSeconds = newState.minutes*60
+      };
+      this.setState(newState);
+    }
+  }
+
+  breakIncrement(){
+    if(this.state.breaks < 60){
+      let newState = {...this.state,
+        breaks: this.state.breaks += 1,
+        breaksSeconds = newState.breaks*60
+      };
+      this.setState(newState);
+    }
+  }
+
+  breakDecrement(){
+    if(this.state.breaks < 60){
+      let newState = {...this.state,
+      breaks: this.state.breaks -= 1,
+      breaksSeconds = newState.breaks*60
+    };
+      this.setState(newState);
+    }
+  }
+  resetState(){
+    clearInterval(counter);
+    clearInterval(breakCounter);
+    let newState = {...this.state,
+      playing: false,
+      breaks: 5,
+      minutes: 25,
+      minutesSeconds: 1500,
+      breaksSeconds: 600,
+      session: 'session',
+      icon: 'icon HTML'
+    };
+    //  buzz.pause();
+    // buzz.currentTime = 0;
+    this.setState({newState});
+  }
+
 
 
   render() {
@@ -229,70 +291,70 @@ of both timer and timerBreak*/
   
   /*the four increment decrement buttons add or detract 1 if minutes is less than 60 and more than 1
   It resets rawtime and the timer displayed anytime it is clicked, even when playing. Could it be a problem here?*/
-  $('#session-increment').click( () => {
-      minutes < 60 ? minutes += 1 : minutes;
-      rawTime = minutes*60;
-      $('#session-length').html(minutes);
-      $('#time-left').html(clockTime(rawTime));
-      event.preventDefault();
-  });
+  // $('#session-increment').click( () => {
+  //     minutes < 60 ? minutes += 1 : minutes;
+  //     rawTime = minutes*60;
+  //     $('#session-length').html(minutes);
+  //     $('#time-left').html(clockTime(rawTime));
+  //     event.preventDefault();
+  // });
   
-    $('#session-decrement').click( () => {
-    minutes > 1 ? minutes -= 1 : minutes;
-    rawTime = minutes*60;
-    $('#session-length').html(minutes);
-    $('#time-left').html(clockTime(rawTime));
-    event.preventDefault();
-    }
-  );
+  //   $('#session-decrement').click( () => {
+  //   minutes > 1 ? minutes -= 1 : minutes;
+  //   rawTime = minutes*60;
+  //   $('#session-length').html(minutes);
+  //   $('#time-left').html(clockTime(rawTime));
+  //   event.preventDefault();
+  //   }
+  // );
   
-    $('#break-increment').click( () => {
-    breaks < 60 ? breaks += 1 : breaks;
-    rawBreak = breaks*60;
-     $('#break-length').html(breaks);
-     event.preventDefault();
-    }
-  );
+  //   $('#break-increment').click( () => {
+  //   breaks < 60 ? breaks += 1 : breaks;
+  //   rawBreak = breaks*60;
+  //    $('#break-length').html(breaks);
+  //    event.preventDefault();
+  //   }
+  // );
   
-    $('#break-decrement').click( () => {
-      breaks > 1 ? breaks -= 1 : breaks;
-      rawBreak = breaks*60;
-      $('#break-length').html(breaks);
-      event.preventDefault();
-    }
-  );
+  //   $('#break-decrement').click( () => {
+  //     breaks > 1 ? breaks -= 1 : breaks;
+  //     rawBreak = breaks*60;
+  //     $('#break-length').html(breaks);
+  //     event.preventDefault();
+  //   }
+  // );
   
   //with reset all values are set back to their original values and the intervals cleared.
-  $('#reset').click( () => {
-    clearInterval(counter);
-    clearInterval(breakCounter)
-    playing = false;
-    minutes = 25;
-    breaks = 5;
-    rawTime = minutes*60;
-    rawBreak = breaks*60;
-    buzz.pause();
-    buzz.currentTime = 0;
-    session = 'session';
-    $('#break-label').addClass('turn');
-    $('#session-label').addClass('turn');
-    $('#timer-label').addClass('turn');
-    $('#time-left').addClass('turn');
+  // $('#reset').click( () => {
+  //   clearInterval(counter);
+  //   clearInterval(breakCounter)
+  //   playing = false;
+  //   minutes = 25;
+  //   breaks = 5;
+  //   rawTime = minutes*60;
+  //   rawBreak = breaks*60;
+  //   buzz.pause();
+  //   buzz.currentTime = 0;
+  //   session = 'session';
+  //   $('#break-label').addClass('turn');
+  //   $('#session-label').addClass('turn');
+  //   $('#timer-label').addClass('turn');
+  //   $('#time-left').addClass('turn');
 
-    $('#timer-label').html(session);
-    $('#session-length').html(minutes);
-    $('#break-length').html(breaks);
-    $('#time-left').html(clockTime(rawTime));
+  //   $('#timer-label').html(session);
+  //   $('#session-length').html(minutes);
+  //   $('#break-length').html(breaks);
+  //   $('#time-left').html(clockTime(rawTime));
     
-    setTimeout(function(){
-    $('#break-label').removeClass('turn');
-    $('#session-label').removeClass('turn');
-    $('#timer-label').removeClass('turn');
-    $('#time-left').removeClass('turn');
+  //   setTimeout(function(){
+  //   $('#break-label').removeClass('turn');
+  //   $('#session-label').removeClass('turn');
+  //   $('#timer-label').removeClass('turn');
+  //   $('#time-left').removeClass('turn');
       
-    }, 2000);
-    event.preventDefault();
-  })
+  //   }, 2000);
+  //   event.preventDefault();
+  // })
   
   
 });
