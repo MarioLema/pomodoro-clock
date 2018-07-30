@@ -1,8 +1,10 @@
 'use strict';
 
+
+//COUNTERS FOR SETINTERVALS
 let counter, breakCounter;
 
-
+//=====================CLOCK CLASS CONTAINER=========================
 class Clock extends React.Component {
   constructor(props) {
     super(props);
@@ -17,16 +19,15 @@ class Clock extends React.Component {
       session: 'session',
       icon: '',
     };
-    this.startPlay = this.startPlay.bind(this);
-    this.stopPlay = this.stopPlay.bind(this);
     this.togglePlay = this.togglePlay.bind(this);
     this.sessionDecrement = this.sessionDecrement.bind(this);
     this.sessionIncrement = this.sessionIncrement.bind(this);
     this.breakDecrement = this.breakDecrement.bind(this);
     this.breakIncrement = this.breakIncrement.bind(this);
     this.timer = this.timer.bind(this);
+    this.resetState = this.resetState.bind(this);
   }
-
+//  method to transform seconds to timeformat
   timeFormat(num){
     let leading = '',
         middle = ':';
@@ -36,6 +37,7 @@ class Clock extends React.Component {
             num % 60 >= 10 ? leading = '0' : (leading = '0', middle = ':0' );
     return `${leading}${Math.floor(num/60)}${middle}${num % 60}`
   }
+// timer methods to run the interval 
   timer(){
     if(this.state.minutesSeconds > 0){
       let newState = {...this.state, 
@@ -71,7 +73,7 @@ class Clock extends React.Component {
       counter = setInterval(timer,1000);
     }
   }
-
+// method to control the play button
   togglePlay(){
     if(this.state.playing === false){
       let newState = {...this.state,
@@ -79,7 +81,7 @@ class Clock extends React.Component {
         icon: 'NEWICONGOESHERE'
         };
         this.setState(newState);
-        this.state.session === 'session' ?  counter = setInterval(timer, 1000) :  breakCounter = setInterval(timerBreak, 1000);
+        this.state.session === 'session' ?  counter = setInterval(this.timer, 1000) :  breakCounter = setInterval(this.timerBreak, 1000);
     }
     else{
       let newState = {...this.state,
@@ -87,7 +89,7 @@ class Clock extends React.Component {
         icon: 'NEWICONGOESHERE'
       };
   
-      thi.setState(newState);
+      this.setState(newState);
       this.state.session === 'session' ?  clearInterval(counter) : clearInterval(breakCounter);
     }
   }
@@ -96,7 +98,7 @@ class Clock extends React.Component {
     if(this.state.minutes < 60){
       let newState = {...this.state,
         minutes: this.state.minutes += 1,
-        minutesSeconds: newState.minutes*60
+        minutesSeconds: this.minutes*60
       };
       this.setState(newState);
     }
@@ -106,7 +108,7 @@ class Clock extends React.Component {
     if(this.state.minutes > 1){
       let newState = {...this.state,
         minutes: this.state.minutes -= 1,
-        minutesSeconds: newState.minutes*60
+        minutesSeconds: this.minutes*60
       };
       this.setState(newState);
     }
@@ -116,21 +118,22 @@ class Clock extends React.Component {
     if(this.state.breaks < 60){
       let newState = {...this.state,
         breaks: this.state.breaks += 1,
-        breaksSeconds: newState.breaks*60
+        breaksSeconds: this.breaks*60
       };
       this.setState(newState);
     }
   }
 
   breakDecrement(){
-    if(this.state.breaks < 60){
+    if(this.state.breaks > 1){
       let newState = {...this.state,
       breaks: this.state.breaks -= 1,
-      breaksSeconds: newState.breaks*60
+      breaksSeconds: this.breaks*60
     };
       this.setState(newState);
     }
   }
+// controls the reset button
   resetState(){
     clearInterval(counter);
     clearInterval(breakCounter);
@@ -145,7 +148,7 @@ class Clock extends React.Component {
     };
     //  buzz.pause();
     // buzz.currentTime = 0;
-    this.setState({newState});
+    this.setState(newState);
   }
 
 
@@ -153,46 +156,46 @@ class Clock extends React.Component {
   render() {
     return (
       <div id='pomodoro'>
-      <div class='bubble' id='break-label'>Breaks</div>
-      <div class='bubble' id='session-label'>Min</div>
-      <div class='bubble btn' id='session-increment'>+</div>
-      <div class='bubble btn' id='session-decrement'>-</div>
-      <div class='bubble btn' id='break-decrement'>-</div>
-      <div class='bubble btn' id='break-increment'>+</div>
-      <div class='bubble'  id='break-length'>{this.state.breaks}</div>
-      <div class='bubble' id='session-length'>{this.state.minutes}</div>
-      <div class='bubble' id='timer-label'>{this.state.label}</div>
-      <div class='bubble' id='time-left'>{this.state.timeLeft}</div>
-      <div class='bubble btn' id='start_stop'><i class="fas fa-play"></i></div>
-      <div class='bubble btn' id='reset'><i class="fas fa-redo"></i></div>
+      <div className='bubble' id='break-label'>Breaks</div>
+      <div className='bubble' id='session-label'>Min</div>
+      <div className='bubble btn' id='session-increment' onClick={this.sessionIncrement}>+</div>
+      <div className='bubble btn' id='session-decrement' onClick={this.sessionDecrement}>-</div>
+      <div className='bubble btn' id='break-decrement' onClick={this.breakDecrement}>-</div>
+      <div className='bubble btn' id='break-increment' onClick={this.breakIncrement}>+</div>
+      <div className='bubble'  id='break-length'>{this.state.breaks}</div>
+      <div className='bubble' id='session-length'>{this.state.minutes}</div>
+      <div className='bubble' id='timer-label'>{this.state.session}</div>
+      <div className='bubble' id='time-left'>{this.state.timeLeft}</div>
+      <div className='bubble btn' id='start_stop' onClick={this.togglePlay}><i className="fas fa-play"></i></div>
+      <div className='bubble btn' id='reset' onClick={this.resetState}><i className="fas fa-redo"></i></div>
         
         
-        <div class='background northWest' id='back1'></div>
-        <div class='background east' id='back2'></div>
-        <div class='background southEast' id='back3'></div>
-        <div class='background southWest' id='back4'></div>
-        <div class='background north' id='back5'></div>
-        <div class='background west' id='back6'></div>
-        <div class='background northWest' id='back7'></div>
-        <div class='background east' id='back8'></div>
-        <div class='background southEast' id='back9'></div>
-        <div class='background south' id='back10'></div>
-        <div class='background southWest' id='back11'></div>
-        <div class='background south' id='back12'></div>
-        <div class='background south' id='back13'></div>
-        <div class='background southEast' id='back14'></div>
-        <div class='background southEast' id='back15'></div>
-        <div class='background northEast' id='back16'></div>
-        <div class='background northWest' id='back17'></div>
-        <div class='background north' id='back18'></div>
-        <div class='background northWest' id='back19'></div>
-        <div class='background west' id='back20'></div>
-        <div class='background east' id='back21'></div>
-        <div class='background northEast' id='back22'></div>
-        <div class='background east' id='back23'></div>
-        <div class='background north' id='back24'></div>
-        <div class='background northEast' id='back25'></div>
-        <div class='background north' id='back26'></div>
+        <div className='background northWest' id='back1'></div>
+        <div className='background east' id='back2'></div>
+        <div className='background southEast' id='back3'></div>
+        <div className='background southWest' id='back4'></div>
+        <div className='background north' id='back5'></div>
+        <div className='background west' id='back6'></div>
+        <div className='background northWest' id='back7'></div>
+        <div className='background east' id='back8'></div>
+        <div className='background southEast' id='back9'></div>
+        <div className='background south' id='back10'></div>
+        <div className='background southWest' id='back11'></div>
+        <div className='background south' id='back12'></div>
+        <div className='background south' id='back13'></div>
+        <div className='background southEast' id='back14'></div>
+        <div className='background southEast' id='back15'></div>
+        <div className='background northEast' id='back16'></div>
+        <div className='background northWest' id='back17'></div>
+        <div className='background north' id='back18'></div>
+        <div className='background northWest' id='back19'></div>
+        <div className='background west' id='back20'></div>
+        <div className='background east' id='back21'></div>
+        <div className='background northEast' id='back22'></div>
+        <div className='background east' id='back23'></div>
+        <div className='background north' id='back24'></div>
+        <div className='background northEast' id='back25'></div>
+        <div className='background north' id='back26'></div>
       </div>
     );
   }

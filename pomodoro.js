@@ -1,5 +1,7 @@
 'use strict';
 
+//COUNTERS FOR SETINTERVALS
+
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -10,6 +12,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 var counter = void 0,
     breakCounter = void 0;
+
+//=====================CLOCK CLASS CONTAINER=========================
 
 var Clock = function (_React$Component) {
   _inherits(Clock, _React$Component);
@@ -30,16 +34,17 @@ var Clock = function (_React$Component) {
       session: 'session',
       icon: ''
     };
-    _this.startPlay = _this.startPlay.bind(_this);
-    _this.stopPlay = _this.stopPlay.bind(_this);
     _this.togglePlay = _this.togglePlay.bind(_this);
     _this.sessionDecrement = _this.sessionDecrement.bind(_this);
     _this.sessionIncrement = _this.sessionIncrement.bind(_this);
     _this.breakDecrement = _this.breakDecrement.bind(_this);
     _this.breakIncrement = _this.breakIncrement.bind(_this);
     _this.timer = _this.timer.bind(_this);
+    _this.resetState = _this.resetState.bind(_this);
     return _this;
   }
+  //  method to transform seconds to timeformat
+
 
   _createClass(Clock, [{
     key: 'timeFormat',
@@ -49,6 +54,8 @@ var Clock = function (_React$Component) {
       num >= 600 ? num % 60 >= 10 ? middle = ':' : middle = ':0' : num % 60 >= 10 ? leading = '0' : (leading = '0', middle = ':0');
       return '' + leading + Math.floor(num / 60) + middle + num % 60;
     }
+    // timer methods to run the interval 
+
   }, {
     key: 'timer',
     value: function timer() {
@@ -86,6 +93,8 @@ var Clock = function (_React$Component) {
         counter = setInterval(timer, 1000);
       }
     }
+    // method to control the play button
+
   }, {
     key: 'togglePlay',
     value: function togglePlay() {
@@ -95,14 +104,14 @@ var Clock = function (_React$Component) {
           icon: 'NEWICONGOESHERE'
         });
         this.setState(newState);
-        this.state.session === 'session' ? counter = setInterval(timer, 1000) : breakCounter = setInterval(timerBreak, 1000);
+        this.state.session === 'session' ? counter = setInterval(this.timer, 1000) : breakCounter = setInterval(this.timerBreak, 1000);
       } else {
         var _newState3 = Object.assign({}, this.state, {
           playing: false,
           icon: 'NEWICONGOESHERE'
         });
 
-        thi.setState(_newState3);
+        this.setState(_newState3);
         this.state.session === 'session' ? clearInterval(counter) : clearInterval(breakCounter);
       }
     }
@@ -114,7 +123,7 @@ var Clock = function (_React$Component) {
       if (this.state.minutes < 60) {
         var newState = Object.assign({}, this.state, {
           minutes: this.state.minutes += 1,
-          minutesSeconds: newState.minutes * 60
+          minutesSeconds: this.minutes * 60
         });
         this.setState(newState);
       }
@@ -125,7 +134,7 @@ var Clock = function (_React$Component) {
       if (this.state.minutes > 1) {
         var newState = Object.assign({}, this.state, {
           minutes: this.state.minutes -= 1,
-          minutesSeconds: newState.minutes * 60
+          minutesSeconds: this.minutes * 60
         });
         this.setState(newState);
       }
@@ -136,7 +145,7 @@ var Clock = function (_React$Component) {
       if (this.state.breaks < 60) {
         var newState = Object.assign({}, this.state, {
           breaks: this.state.breaks += 1,
-          breaksSeconds: newState.breaks * 60
+          breaksSeconds: this.breaks * 60
         });
         this.setState(newState);
       }
@@ -144,14 +153,16 @@ var Clock = function (_React$Component) {
   }, {
     key: 'breakDecrement',
     value: function breakDecrement() {
-      if (this.state.breaks < 60) {
+      if (this.state.breaks > 1) {
         var newState = Object.assign({}, this.state, {
           breaks: this.state.breaks -= 1,
-          breaksSeconds: newState.breaks * 60
+          breaksSeconds: this.breaks * 60
         });
         this.setState(newState);
       }
     }
+    // controls the reset button
+
   }, {
     key: 'resetState',
     value: function resetState() {
@@ -168,7 +179,7 @@ var Clock = function (_React$Component) {
       });
       //  buzz.pause();
       // buzz.currentTime = 0;
-      this.setState({ newState: newState });
+      this.setState(newState);
     }
   }, {
     key: 'render',
@@ -178,90 +189,90 @@ var Clock = function (_React$Component) {
         { id: 'pomodoro' },
         React.createElement(
           'div',
-          { 'class': 'bubble', id: 'break-label' },
+          { className: 'bubble', id: 'break-label' },
           'Breaks'
         ),
         React.createElement(
           'div',
-          { 'class': 'bubble', id: 'session-label' },
+          { className: 'bubble', id: 'session-label' },
           'Min'
         ),
         React.createElement(
           'div',
-          { 'class': 'bubble btn', id: 'session-increment' },
+          { className: 'bubble btn', id: 'session-increment', onClick: this.sessionIncrement },
           '+'
         ),
         React.createElement(
           'div',
-          { 'class': 'bubble btn', id: 'session-decrement' },
+          { className: 'bubble btn', id: 'session-decrement', onClick: this.sessionDecrement },
           '-'
         ),
         React.createElement(
           'div',
-          { 'class': 'bubble btn', id: 'break-decrement' },
+          { className: 'bubble btn', id: 'break-decrement', onClick: this.breakDecrement },
           '-'
         ),
         React.createElement(
           'div',
-          { 'class': 'bubble btn', id: 'break-increment' },
+          { className: 'bubble btn', id: 'break-increment', onClick: this.breakIncrement },
           '+'
         ),
         React.createElement(
           'div',
-          { 'class': 'bubble', id: 'break-length' },
+          { className: 'bubble', id: 'break-length' },
           this.state.breaks
         ),
         React.createElement(
           'div',
-          { 'class': 'bubble', id: 'session-length' },
+          { className: 'bubble', id: 'session-length' },
           this.state.minutes
         ),
         React.createElement(
           'div',
-          { 'class': 'bubble', id: 'timer-label' },
-          this.state.label
+          { className: 'bubble', id: 'timer-label' },
+          this.state.session
         ),
         React.createElement(
           'div',
-          { 'class': 'bubble', id: 'time-left' },
+          { className: 'bubble', id: 'time-left' },
           this.state.timeLeft
         ),
         React.createElement(
           'div',
-          { 'class': 'bubble btn', id: 'start_stop' },
-          React.createElement('i', { 'class': 'fas fa-play' })
+          { className: 'bubble btn', id: 'start_stop', onClick: this.togglePlay },
+          React.createElement('i', { className: 'fas fa-play' })
         ),
         React.createElement(
           'div',
-          { 'class': 'bubble btn', id: 'reset' },
-          React.createElement('i', { 'class': 'fas fa-redo' })
+          { className: 'bubble btn', id: 'reset', onClick: this.resetState },
+          React.createElement('i', { className: 'fas fa-redo' })
         ),
-        React.createElement('div', { 'class': 'background northWest', id: 'back1' }),
-        React.createElement('div', { 'class': 'background east', id: 'back2' }),
-        React.createElement('div', { 'class': 'background southEast', id: 'back3' }),
-        React.createElement('div', { 'class': 'background southWest', id: 'back4' }),
-        React.createElement('div', { 'class': 'background north', id: 'back5' }),
-        React.createElement('div', { 'class': 'background west', id: 'back6' }),
-        React.createElement('div', { 'class': 'background northWest', id: 'back7' }),
-        React.createElement('div', { 'class': 'background east', id: 'back8' }),
-        React.createElement('div', { 'class': 'background southEast', id: 'back9' }),
-        React.createElement('div', { 'class': 'background south', id: 'back10' }),
-        React.createElement('div', { 'class': 'background southWest', id: 'back11' }),
-        React.createElement('div', { 'class': 'background south', id: 'back12' }),
-        React.createElement('div', { 'class': 'background south', id: 'back13' }),
-        React.createElement('div', { 'class': 'background southEast', id: 'back14' }),
-        React.createElement('div', { 'class': 'background southEast', id: 'back15' }),
-        React.createElement('div', { 'class': 'background northEast', id: 'back16' }),
-        React.createElement('div', { 'class': 'background northWest', id: 'back17' }),
-        React.createElement('div', { 'class': 'background north', id: 'back18' }),
-        React.createElement('div', { 'class': 'background northWest', id: 'back19' }),
-        React.createElement('div', { 'class': 'background west', id: 'back20' }),
-        React.createElement('div', { 'class': 'background east', id: 'back21' }),
-        React.createElement('div', { 'class': 'background northEast', id: 'back22' }),
-        React.createElement('div', { 'class': 'background east', id: 'back23' }),
-        React.createElement('div', { 'class': 'background north', id: 'back24' }),
-        React.createElement('div', { 'class': 'background northEast', id: 'back25' }),
-        React.createElement('div', { 'class': 'background north', id: 'back26' })
+        React.createElement('div', { className: 'background northWest', id: 'back1' }),
+        React.createElement('div', { className: 'background east', id: 'back2' }),
+        React.createElement('div', { className: 'background southEast', id: 'back3' }),
+        React.createElement('div', { className: 'background southWest', id: 'back4' }),
+        React.createElement('div', { className: 'background north', id: 'back5' }),
+        React.createElement('div', { className: 'background west', id: 'back6' }),
+        React.createElement('div', { className: 'background northWest', id: 'back7' }),
+        React.createElement('div', { className: 'background east', id: 'back8' }),
+        React.createElement('div', { className: 'background southEast', id: 'back9' }),
+        React.createElement('div', { className: 'background south', id: 'back10' }),
+        React.createElement('div', { className: 'background southWest', id: 'back11' }),
+        React.createElement('div', { className: 'background south', id: 'back12' }),
+        React.createElement('div', { className: 'background south', id: 'back13' }),
+        React.createElement('div', { className: 'background southEast', id: 'back14' }),
+        React.createElement('div', { className: 'background southEast', id: 'back15' }),
+        React.createElement('div', { className: 'background northEast', id: 'back16' }),
+        React.createElement('div', { className: 'background northWest', id: 'back17' }),
+        React.createElement('div', { className: 'background north', id: 'back18' }),
+        React.createElement('div', { className: 'background northWest', id: 'back19' }),
+        React.createElement('div', { className: 'background west', id: 'back20' }),
+        React.createElement('div', { className: 'background east', id: 'back21' }),
+        React.createElement('div', { className: 'background northEast', id: 'back22' }),
+        React.createElement('div', { className: 'background east', id: 'back23' }),
+        React.createElement('div', { className: 'background north', id: 'back24' }),
+        React.createElement('div', { className: 'background northEast', id: 'back25' }),
+        React.createElement('div', { className: 'background north', id: 'back26' })
       );
     }
   }]);
