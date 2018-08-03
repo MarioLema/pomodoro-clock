@@ -32,8 +32,10 @@ var Clock = function (_React$Component) {
       timeDisplayed: "25:00",
       playing: false,
       session: "session",
-      icon: ""
+      icon: "",
+      active: false
     };
+    _this.activate = _this.activate.bind(_this);
     _this.togglePlay = _this.togglePlay.bind(_this);
     _this.startPlay = _this.startPlay.bind(_this);
     _this.pausePlay = _this.pausePlay.bind(_this);
@@ -62,6 +64,14 @@ var Clock = function (_React$Component) {
   }, {
     key: "timer",
     value: function timer() {
+      if (this.state.minutesSeconds > 0) {
+        var newState = Object.assign({}, this.state);
+        newState.minutesSeconds -= 1;
+        newState.timeDisplayed = this.timeFormat(newState.minutesSeconds);
+        this.setState(newState);
+      } else {
+        console.log('inished');
+      }
       // if (this.state.minutesSeconds > 0) {
       //   let newState = {...this.state};
       //   newState.minutesSeconds -= 1;
@@ -117,8 +127,22 @@ var Clock = function (_React$Component) {
     // method to control the play button
 
   }, {
+    key: "activate",
+    value: function activate() {
+      if (this.state.active === false) {
+        var newState = Object.assign({}, this.state);
+        newState.active = true;
+        newState.minutesSeconds = this.state.minutes * 60;
+        newState.breaksSeconds = this.state.breaks * 60;
+        this.setState(newState, this.togglePlay());
+      } else {
+        this.togglePlay();
+      }
+    }
+  }, {
     key: "togglePlay",
     value: function togglePlay() {
+      console.log(this.state);
       this.state.playing === false ? this.startPlay() : this.pausePlay();
     }
     //MINUTESSECONDS REFER TO NEWSTATE INSIDE NEW STATE. COULD CAUSE PROBLEMS
@@ -126,11 +150,10 @@ var Clock = function (_React$Component) {
   }, {
     key: "sessionIncrement",
     value: function sessionIncrement() {
-      if (this.state.minutes < 60 && this.state.playing === false) {
-        var newState = Object.assign({}, this.state, {
-          minutes: this.state.minutes += 1,
-          minutesSeconds: this.minutes * 60
-        });
+      if (this.state.minutes < 60) {
+        var newState = Object.assign({}, this.state);
+        newState.minutes += 1;
+        // newState.minutesSeconds =  newState.minutes * 60;
         this.setState(newState);
       }
     }
@@ -138,10 +161,9 @@ var Clock = function (_React$Component) {
     key: "sessionDecrement",
     value: function sessionDecrement() {
       if (this.state.minutes > 1) {
-        var newState = Object.assign({}, this.state, {
-          minutes: this.state.minutes -= 1,
-          minutesSeconds: this.minutes * 60
-        });
+        var newState = Object.assign({}, this.state);
+        newState.minutes -= 1;
+        // newState.minutesSeconds =  newState.minutes * 60;
         this.setState(newState);
       }
     }
@@ -149,10 +171,9 @@ var Clock = function (_React$Component) {
     key: "breakIncrement",
     value: function breakIncrement() {
       if (this.state.breaks < 60) {
-        var newState = Object.assign({}, this.state, {
-          breaks: this.state.breaks += 1,
-          breaksSeconds: this.breaks * 60
-        });
+        var newState = Object.assign({}, this.state);
+        newState.breaks += 1;
+        // newState.breaksSeconds = newState.breaks * 60;
         this.setState(newState);
       }
     }
@@ -160,10 +181,9 @@ var Clock = function (_React$Component) {
     key: "breakDecrement",
     value: function breakDecrement() {
       if (this.state.breaks > 1) {
-        var newState = Object.assign({}, this.state, {
-          breaks: this.state.breaks -= 1,
-          breaksSeconds: this.breaks * 60
-        });
+        var newState = Object.assign({}, this.state);
+        newState.breaks -= 1;
+        // newState.breaksSeconds = newState.breaks * 60;
         this.setState(newState);
       }
     }
@@ -176,6 +196,7 @@ var Clock = function (_React$Component) {
       clearInterval(breakCounter);
       var newState = Object.assign({}, this.state, {
         playing: false,
+        active: false,
         breaks: 5,
         minutes: 25,
         minutesSeconds: 1500,
@@ -262,7 +283,7 @@ var Clock = function (_React$Component) {
         ),
         React.createElement(
           "div",
-          { className: "bubble btn", id: "start_stop", onClick: this.togglePlay },
+          { className: "bubble btn", id: "start_stop", onClick: this.activate },
           React.createElement("i", { className: "fas fa-play" })
         ),
         React.createElement(

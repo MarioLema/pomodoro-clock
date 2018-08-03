@@ -16,8 +16,10 @@ class Clock extends React.Component {
       timeDisplayed: "25:00",
       playing: false,
       session: "session",
-      icon: ""
+      icon: "",
+      active: false
     };
+    this.activate = this.activate.bind(this);
     this.togglePlay = this.togglePlay.bind(this);
     this.startPlay = this.startPlay.bind(this);
     this.pausePlay = this.pausePlay.bind(this);
@@ -44,6 +46,14 @@ class Clock extends React.Component {
   }
   // timer methods to run the interval
   timer() {
+    if(this.state.minutesSeconds > 0){
+        let newState = {...this.state};
+        newState.minutesSeconds -= 1;
+        newState.timeDisplayed = this.timeFormat(newState.minutesSeconds)
+        this.setState(newState);
+    }else{
+      console.log('inished');
+    }
     // if (this.state.minutesSeconds > 0) {
     //   let newState = {...this.state};
     //   newState.minutesSeconds -= 1;
@@ -92,50 +102,54 @@ class Clock extends React.Component {
     this.state.session === 'session' ? clearInterval(counter) :  clearInterval(breakCounter);
   }
   // method to control the play button
+  activate(){
+    if(this.state.active === false){
+      let newState = {...this.state};
+      newState.active = true;
+      newState.minutesSeconds = this.state.minutes * 60;
+      newState.breaksSeconds = this.state.breaks * 60;
+      this.setState(newState, this.togglePlay());
+    }else{
+      this.togglePlay();
+    }
+  }
   togglePlay() {
+    console.log(this.state);
     this.state.playing === false ? this.startPlay() : this.pausePlay();
   }
   //MINUTESSECONDS REFER TO NEWSTATE INSIDE NEW STATE. COULD CAUSE PROBLEMS
   sessionIncrement() {
-    if (this.state.minutes < 60 && this.state.playing === false) {
-      let newState = {
-        ...this.state,
-        minutes: (this.state.minutes += 1),
-        minutesSeconds: this.minutes * 60
-      };
+    if (this.state.minutes < 60) {
+      let newState = {...this.state};
+        newState.minutes += 1;
+        // newState.minutesSeconds =  newState.minutes * 60;
       this.setState(newState);
     }
   }
 
   sessionDecrement() {
     if (this.state.minutes > 1) {
-      let newState = {
-        ...this.state,
-        minutes: (this.state.minutes -= 1),
-        minutesSeconds: this.minutes * 60
-      };
+      let newState = {...this.state};
+        newState.minutes -= 1;
+        // newState.minutesSeconds =  newState.minutes * 60;
       this.setState(newState);
     }
   }
 
   breakIncrement() {
     if (this.state.breaks < 60) {
-      let newState = {
-        ...this.state,
-        breaks: (this.state.breaks += 1),
-        breaksSeconds: this.breaks * 60
-      };
+      let newState = {...this.state};
+      newState.breaks += 1;
+      // newState.breaksSeconds = newState.breaks * 60;
       this.setState(newState);
     }
   }
 
   breakDecrement() {
     if (this.state.breaks > 1) {
-      let newState = {
-        ...this.state,
-        breaks: (this.state.breaks -= 1),
-        breaksSeconds: this.breaks * 60
-      };
+      let newState = {...this.state};
+      newState.breaks -= 1;
+      // newState.breaksSeconds = newState.breaks * 60;
       this.setState(newState);
     }
   }
@@ -146,6 +160,7 @@ class Clock extends React.Component {
     let newState = {
       ...this.state,
       playing: false,
+      active: false,
       breaks: 5,
       minutes: 25,
       minutesSeconds: 1500,
@@ -208,7 +223,7 @@ class Clock extends React.Component {
         <div className="bubble" id="time-left">
           {this.state.timeDisplayed}
         </div>
-        <div className="bubble btn" id="start_stop" onClick={this.togglePlay}>
+        <div className="bubble btn" id="start_stop" onClick={this.activate}>
           <i className="fas fa-play" />
         </div>
         <div className="bubble btn" id="reset" onClick={this.resetState}>
